@@ -3,10 +3,12 @@
 namespace App\Controller;
 
 use App\Entity\Article;
+use App\Form\ArticleType;
 use App\Repository\ArticleRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController; // AbstractController déjà inclus dans Symfony
 use Symfony\Component\BrowserKit\Request as BrowserKitRequest;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route; // taper Route pour avoir l'autocompletion la 1ere fois
 
 /**
@@ -48,42 +50,80 @@ class ArticleController extends AbstractController {
         ]);
     }
 
-     /**
-    * Afficher le formulaire de création d'un article
-    * 
-    * @Route("/create", name="article_create", methods={"GET"})
-    */
+  // /new est accessible en 2 méthodes:
+  // GET : pour AFFICHER le formulaire
+  // POST : pour TRAITER le formulaire
 
-   public function create() {    
+  /**
+  * @Route("/create", name="article_new", methods={"GET","POST"})
+  */
+  public function new(Request $request): Response
+  {
 
-    return $this->render('/Articles/create.html.twig');
-   } 
+  // CAS GET (affichage) :
+      // On prépare l'article à créer avec le formulaire
+      $article = new Article();
 
+      // On prépare le formulaire : on utilise le service createForm avec en arguments: le formulaire généré (ArticleType) et l'objet traité par le formulaire ($article)
+      $form = $this->createForm(ArticleType::class, $article);
 
-   /**
-     * @Route("/{article}/edit", name="article_edit", methods={"GET"})
-     */
-    public function edit(Article $article) {
-      return $this->render('Articles/create.html.twig', [
-          "article" => $article
+  // CAS POST (traitement) :
+      // On indique au formulaire de traiter la requête
+      $form->handleRequest($request); // action des SETters est géré automatiquement ici
+
+      // Si le formulaire a été envoyé et est valide, on le traite
+      if ($form->isSubmitted() && $form->isValid()) {
+
+          // On enregistre la donnée
+          $entityManager = $this->getDoctrine()->getManager();
+          $entityManager->persist($article);
+          $entityManager->flush();
+
+          // On redirige vers la page article_index
+          return $this->redirectToRoute('article_index');
+      }
+
+  // CAS GET ou CAS POST SI FORMULAIRE INVALIDE (if ci-dessus) :
+  // On affiche le formulaire
+      return $this->render('/Articles/create.html.twig', [
+          'product' => $article,
+          'form' => $form->createView(),
       ]);
   }
 
-  /**
-   * @Route("/{article}/edit", name="article_update", methods={"POST"})
-   */
-  public function update(Request $request, Article $article) {
+    /** 
+     * @Route("/{article}/edit", name="article_edit", methods={"GET", "POST"})
+     */
+    public function update(Request $request, Article $article) {
+      
+      // On prépare le formulaire : on utilise le service createForm avec en arguments: le formulaire généré (ArticleType) et l'objet traité par le formulaire ($article)
+      $form = $this->createForm(ArticleType::class, $article);
 
-      $article->setTitle($request->request->get('title'));
-      $article->setContent($request->request->get('content'));
-      $article->setShortContent($request->request->get('short_content'));
+      // CAS POST (traitement) :
+        // On indique au formulaire de traiter la requête
+        $form->handleRequest($request);
 
-      $manager = $this->getDoctrine()->getManager();
-      $manager->flush();
+        // Si le formulaire a été envoyé et est valide, on le traite
+        if ($form->isSubmitted() && $form->isValid()) {
 
-      return $this->redirectToRoute("article_index");
+            // On enregistre la donnée
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->persist($article);
+            $entityManager->flush();
 
-  }
+            // On redirige vers la page article_index
+            return $this->redirectToRoute('article_index');
+        }
+
+    // CAS GET ou CAS POST SI FORMULAIRE INVALIDE (if ci-dessus) :
+    // On affiche le formulaire
+        return $this->render('/Articles/create.html.twig', [
+            'article' => $article,
+            'form' => $form->createView(),
+        ]);
+
+      
+    }
 
   /**
    * @Route("/{article}/delete", name="article_delete", methods={"POST"})
@@ -120,26 +160,7 @@ class ArticleController extends AbstractController {
     * @Route("/", name="article_new", methods={"POST"})
     */
 
-   public function new() {   
-    // On créée un nouvel object Article
-    $article = new Article;
-    $article->setTitle($_POST['title']);
-    $article->setContent($_POST['content']);
-    $article->setShortContent($_POST['short_content']);
-
-    // On récupère l'EntityManager du service Doctrine :
-    // Notez que le code est plus court que dans l'expliation ci-dessus !
-    $em = $this->getDoctrine()->getManager();
-
-    // On donne l'object en gestion à Doctrine pour qu'il "persiste" l'object, c'est à dire qu'il prépare la requête
-    $em->persist($article);
-
-    // On execute effectivement la requête :
-    $em->flush();
-
-    return $this->redirectToRoute("app_index");
-
-   }
+  
 
 }
 
