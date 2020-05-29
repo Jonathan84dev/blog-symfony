@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Page Produit !{% endblock %}
+
+{% block body %}
+<div class="example-wrapper">
+
+    <h1>Hello Voici l'article numéro #{{article.id}}</h1><br/>
+    Il s'agit de l'article {{article.title}}<br/>
+    Il a été créé le {{article.createdAt|date("d/m/Y")}} <br/>
+    Voici son résumé : {{article.shortContent}}<br/> 
+    Et voici son contenu :  {{article.content}}<br/>
+
+
+</div>
+{% endblock %}

@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{% endblock %}
+
+{% block body %}
+<div class="example-wrapper">
+    <h1>Voici la page d'accueil du site!</h1>
+
+   <p> Liste des 2 derniers articles : </p>
+    {% for article in articles %}
+    Titre : {{article.title}} - Contenu : {{article.content}}<br/>
+    <br/>
+
+    {% endfor %}
+    <br/>
+
+</div>
+{% endblock %}

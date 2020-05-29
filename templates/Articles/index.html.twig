@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Page Home !{% endblock %}
+
+{% block body %}
+<div class="example-wrapper">
+    <h1>Voici la page des articles</h1>
+
+    {% for article in articles %}
+    Titre : {{article.title}} </br>
+    Contenu : {{article.content}} <br/>
+    Résumé : {{article.shortContent}} <br/>
+    Créé le : {{article.createdAt|date("d/m/Y H:i", "Europe/Paris")}} <br/>
+    Lien complet : <a href="{{ path('article_show',{ articleId: article.id }) }}">Lien</a><br/>
+    <a href="{{ path('article_edit',{ article: article.id }) }}">Modifier l'article</a><br/>
+    <form action="{{ path('article_delete',{ article: article.id }) }}" method="POST">
+    <button>Supprimer</button>
+    </form>
+    <br/>
+    {% endfor %}
+
+
+    <div>
+    <h1>Rechercher un Article</h1>
+
+    <form action="{{path("article_search")}}" method="GET">
+    <div>
+        <label for="title">Recherche</label>
+        <input type="text" id="" name="q">
+    </div>
+    
+    <button>Rechercher</button>
+    </div>
+
+
+</div>
+{% endblock %}
