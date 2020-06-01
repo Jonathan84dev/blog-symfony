@@ -146,8 +146,7 @@ class ArticleController extends AbstractController {
 
    public function showArticle(ArticleRepository $articleRepository, int $articleId){
 
-    $article = $articleRepository->find($articleId);
-    
+    $article = $articleRepository->find($articleId);    
 
     return $this->render('/Articles/show.html.twig',[
       'article' => $article

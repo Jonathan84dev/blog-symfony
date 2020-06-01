@@ -37,6 +37,11 @@ class Article
      */
     private $short_content;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=Category::class, inversedBy="articles")
+     */
+    private $category;
+
     public function __construct() {
         $this->setCreatedAt(new \DateTime());
     }
@@ -90,6 +95,18 @@ class Article
     public function setShortContent(?string $short_content): self
     {
         $this->short_content = $short_content;
+
+        return $this;
+    }
+
+    public function getCategory(): ?Category
+    {
+        return $this->category;
+    }
+
+    public function setCategory(?Category $category): self
+    {
+        $this->category = $category;
 
         return $this;
     }
